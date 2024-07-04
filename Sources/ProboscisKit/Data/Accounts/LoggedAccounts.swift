@@ -11,13 +11,13 @@ public class LoggedAccount {
     let acct: String
     let app: AppAccount?
     
-    init(token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0), acct: String) {
+    public init(token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0), acct: String) {
         self.token = token
         self.acct = acct
         self.app = nil
     }
     
-    init(appAccount: AppAccount) {
+    public init(appAccount: AppAccount) {
         guard let token = appAccount.oauthToken, let acct = appAccount.accountName else { fatalError("Cannot convert AppAccount to LoggedAccount") }
         self.token = token
         self.acct = acct
@@ -96,4 +96,11 @@ public struct OauthToken: Codable, Hashable, Sendable {
     public let tokenType: String
     public let scope: String
     public let createdAt: Double
+    
+    public init(accessToken: String, tokenType: String, scope: String, createdAt: Double) {
+        self.accessToken = accessToken
+        self.tokenType = tokenType
+        self.scope = scope
+        self.createdAt = createdAt
+    }
 }
