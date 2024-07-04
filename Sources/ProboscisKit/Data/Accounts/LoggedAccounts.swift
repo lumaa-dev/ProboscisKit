@@ -7,9 +7,9 @@ import KeychainSwift
 
 @Model
 public class LoggedAccount {
-    let token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0)
-    let acct: String
-    let app: AppAccount?
+    public let token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0)
+    public let acct: String
+    public let app: AppAccount?
     
     public init(token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0), acct: String) {
         self.token = token
