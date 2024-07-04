@@ -6,7 +6,7 @@ import SwiftData
 import KeychainSwift
 
 @Model
-class LoggedAccount {
+public class LoggedAccount {
     let token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0)
     let acct: String
     let app: AppAccount?
