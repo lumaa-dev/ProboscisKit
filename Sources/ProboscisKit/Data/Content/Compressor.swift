@@ -2,7 +2,11 @@
 
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 import PhotosUI
 
 public actor Compressor {
@@ -59,6 +63,7 @@ public actor Compressor {
         }
     }
     
+#if canImport(UIKit)
     public func compressImageForUpload(_ image: UIImage) async throws -> Data {
         var image = image
         if image.size.height > 5000 || image.size.width > 5000 {
@@ -85,6 +90,34 @@ public actor Compressor {
         
         return imageData
     }
+#elseif canImport(AppKit)
+    public func compressImageForUpload(_ image: NSImage) async throws -> Data {
+        var image = image
+        if image.size.height > 5000 || image.size.width > 5000 {
+            image = image.resized(to: .init(width: image.size.width / 4,
+                                            height: image.size.height / 4))
+        }
+        
+        guard var imageData = image.jpegData(compressionQuality: 0.8) else {
+            throw CompressorError.noData
+        }
+        
+        let maxSize = 10 * 1024 * 1024
+        
+        if imageData.count > maxSize {
+            while imageData.count > maxSize {
+                guard let compressedImage = NSImage(data: imageData),
+                      let compressedData = compressedImage.jpegData(compressionQuality: 0.8)
+                else {
+                    throw CompressorError.noData
+                }
+                imageData = compressedData
+            }
+        }
+        
+        return imageData
+    }
+#endif
     
     func compressVideo(_ url: URL) async -> URL? {
         await withCheckedContinuation { continuation in
@@ -107,4 +140,21 @@ public actor Compressor {
             }
         }
     }
+}
+
+#if canImport(AppKit)
+extension NSImage {
+    func jpegData(compressionQuality: CGFloat) -> Data? {
+        guard let tiffRepresentation = self.tiffRepresentation else {
+            return nil
+        }
+        
+        guard let bitmapImage = NSBitmapImageRep(data: tiffRepresentation) else {
+            return nil
+        }
+        
+        let jpegData = bitmapImage.representation(using: .jpeg, properties: [.compressionFactor: compressionQuality])
+        return jpegData
     }
+}
+#endif

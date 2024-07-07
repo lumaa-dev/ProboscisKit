@@ -2,7 +2,11 @@
 
 import Foundation
 import SwiftUI
+#if canImport(UIKit)
 import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 import UniformTypeIdentifiers
 
 // Dimillian fixed it - https://mastodon.social/@dimillian/111708477095374920
@@ -12,10 +16,17 @@ struct ShareableOnlineImage: Codable, Transferable {
     
     func fetchAsImage() -> Image {
         let data = try? Data(contentsOf: url)
+        #if canImport(UIKit)
         guard let data, let uiimage = UIImage(data: data) else {
             return Image(systemName: "photo")
         }
         return Image(uiImage: uiimage)
+        #elseif canImport(AppKit)
+        guard let data, let nsimage = NSImage(data: data) else {
+            return Image(systemName: "photo")
+        }
+        return Image(nsImage: nsimage)
+        #endif
     }
     
     static var transferRepresentation: some TransferRepresentation {
@@ -25,6 +36,7 @@ struct ShareableOnlineImage: Codable, Transferable {
     }
 }
 
+#if canImport(UIKit)
 extension UIImage {
     func resized(to size: CGSize) -> UIImage {
         UIGraphicsImageRenderer(size: size).image { _ in
@@ -32,6 +44,22 @@ extension UIImage {
         }
     }
 }
+#elseif canImport(AppKit)
+extension NSImage {
+    func resized(to size: CGSize) -> NSImage {
+        let newImage = NSImage(size: size)
+        newImage.lockFocus()
+        let context = NSGraphicsContext.current
+        context?.imageInterpolation = .high
+        self.draw(in: NSRect(origin: .zero, size: size),
+                  from: NSRect(origin: .zero, size: self.size),
+                  operation: .copy,
+                  fraction: 1.0)
+        newImage.unlockFocus()
+        return newImage
+    }
+}
+#endif
 
 public extension ReceivedTransferredFile {
     var localURL: URL {
@@ -44,6 +72,7 @@ public extension ReceivedTransferredFile {
     }
     
 }
+
 public extension URL {
     func mimeType() -> String {
         if let mimeType = UTType(filenameExtension: pathExtension)?.preferredMIMEType {
