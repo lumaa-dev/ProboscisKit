@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// The data required to identify your app
 public protocol AppInfo: Codable {
     var scopes: [AppScopes] { get }
     /// Your app's URL Scheme
@@ -22,15 +23,16 @@ extension AppInfo {
     }
 }
 
+/// The data required to identify your client
 public struct ClientInfo: AppInfo {
     public let scopes: [AppScopes]
-    /// Your app's URL Scheme
+    /// Your client's URL Scheme
     public let scheme: String
-    /// Your app's client name
+    /// Your client's name
     public let clientName: String
     /// The default server when no server is specified
     public let defaultServer: String
-    /// An "About" URL when Mastodon users tap on the name of your app when shown
+    /// An "About" URL when Mastodon users tap on the name of your client when shown
     public let aboutApp: URL
     
     public var appName: String {

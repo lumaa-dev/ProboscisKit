@@ -2,6 +2,9 @@
 
 import Foundation
 
+/// A Mastodon message
+///
+/// A Mastodon message is simply a post sent with the ``Visibility`` set to `direct`
 public struct MessageContact: Identifiable, Decodable, Hashable, Equatable {
     public let id: String
     public let unread: Bool

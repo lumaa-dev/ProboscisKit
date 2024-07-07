@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// A class to smartly store ``Status``es and filter them if necessary using a ``PostFilter``
 class FetchTimeline {
     var client: Client?
     public private(set) var datasource: [Status] = []

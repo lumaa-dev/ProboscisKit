@@ -6,6 +6,7 @@ import Observation
 import os
 import SwiftUI
 
+/// The app ``Client``, this is the bridge from your app to Mastodon
 @Observable
 public final class Client: Equatable, Identifiable, Hashable {
     public static func == (lhs: Client, rhs: Client) -> Bool {

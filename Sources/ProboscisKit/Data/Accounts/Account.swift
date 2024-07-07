@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// Represents a Mastodon account
 public final class Account: Codable, Identifiable, Hashable, Sendable, Equatable {
     public static func == (lhs: Account, rhs: Account) -> Bool {
         lhs.id == rhs.id &&

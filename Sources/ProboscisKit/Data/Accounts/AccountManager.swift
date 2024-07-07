@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// The default ProboscisKit ``AccountManager``
 @Observable
 public class AccountManager: ObservableObject {
     private var client: Client?
@@ -35,16 +36,19 @@ public class AccountManager: ObservableObject {
         return account
     }
     
+    /// If the client is not defined, the app will crash
     public func forceClient() -> Client {
         guard client != nil else { fatalError("Client is not existant in that context") }
         return client!
     }
     
+    /// If the account is not defined, the app will crash
     public func forceAccount() -> Account {
         guard account != nil else { fatalError("Account is not existant in that context") }
         return account!
     }
     
+    ///Fetches the currently logged account using the defined `client`
     public func fetchAccount() async -> Account? {
         guard client != nil else { fatalError("Client is not existant in that context") }
         account = try? await client!.get(endpoint: Accounts.verifyCredentials)

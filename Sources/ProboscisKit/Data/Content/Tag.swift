@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// A hashtag's usage
 public struct Tag: Codable, Identifiable, Equatable, Hashable {
     public struct History: Codable, Identifiable {
         public var id: String {
@@ -38,6 +39,7 @@ public struct Tag: Codable, Identifiable, Equatable, Hashable {
     }
 }
 
+/// A featured hastag
 public struct FeaturedTag: Codable, Identifiable {
     public let id: String
     public let name: String

@@ -5,6 +5,7 @@ import SwiftUI
 import SwiftData
 import KeychainSwift
 
+/// A logged account
 @Model
 public class LoggedAccount {
     public let token: OauthToken = OauthToken(accessToken: "ABC", tokenType: "ABC", scope: "ABC", createdAt: 0.0)
@@ -32,9 +33,9 @@ public struct AppAccount: Codable, Identifiable, Hashable {
     
     /// The key used to store the user token
     private static let saveKey: String = "probosciskit-appaccount.current"
+    /// The ``KeychainSwift`` used for saving and loading previously known ``AppAccount``s
     private static var keychain: KeychainSwift {
         let kc = KeychainSwift()
-        // synchronise later
         return kc
     }
     
@@ -56,15 +57,17 @@ public struct AppAccount: Codable, Identifiable, Hashable {
         self.oauthToken = oauthToken
     }
     
+    /// Forget the saved ``AppAccount``
     public static func clear() {
         Self.keychain.delete(Self.saveKey)
     }
     
+    /// Forget the saved ``AppAccount``
     public func clear() {
         Self.clear()
     }
     
-    /// This function only works with the given `AppAccount`
+    /// This function only works with the given `AppAccount` or with `self`
     public func saveAsCurrent(_ appAccount: AppAccount? = nil) {
         let encoder = JSONEncoder()
         if let data = try? encoder.encode(appAccount ?? self) {
@@ -80,17 +83,15 @@ public struct AppAccount: Codable, Identifiable, Hashable {
         if let newData = data ?? keychain.getData(Self.saveKey) {
             if let decoded = try? decoder.decode(Self.self, from: newData) {
                 return decoded
-            } else {
-                return nil
             }
-        } else {
-            return nil
         }
+        return nil
     }
 }
 
 extension AppAccount: Sendable {}
 
+/// A user OAuth token
 public struct OauthToken: Codable, Hashable, Sendable {
     public let accessToken: String
     public let tokenType: String

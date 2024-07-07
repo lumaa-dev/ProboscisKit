@@ -13,13 +13,16 @@ private enum CodingKeys: CodingKey {
     case asDate
 }
 
+/// A date fetched from an instance and formatted in different ways
 public struct ServerDate: Codable, Hashable, Equatable, Sendable {
     public let asDate: Date
     
+    /// E.g. "2 days ago"
     public var relativeFormatted: String {
         DateFormatterCache.shared.createdAtRelativeFormatter.localizedString(for: asDate, relativeTo: Date())
     }
     
+    /// E.g. "16/08/2022"
     public var shortDateFormatted: String {
         DateFormatterCache.shared.createdAtShortDateFormatted.string(from: asDate)
     }
@@ -74,6 +77,7 @@ class DateFormatterCache: @unchecked Sendable {
     }
 }
 
+/// Defines a relationship between the logged in ``Account`` and another ``Acount``
 public struct Relationship: Codable {
     public let id: String
     public let following: Bool

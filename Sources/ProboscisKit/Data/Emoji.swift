@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// A Mastodon emoji
 public struct Emoji: Codable, Hashable, Identifiable, Equatable, Sendable {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(shortcode)

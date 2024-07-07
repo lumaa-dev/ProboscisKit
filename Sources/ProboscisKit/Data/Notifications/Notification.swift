@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// A Mastodon notification, also called Mastodon activities
 public struct Notification: Decodable, Identifiable, Equatable {
     public enum NotificationType: String, CaseIterable {
         case follow, follow_request, mention, reblog, status, favourite, poll, update
@@ -56,6 +57,9 @@ public extension Array where Element: Hashable {
     }
 }
 
+/// A group of notifications
+///
+/// Notifications are grouped only if they have the same ``type``, the same ``status`` and if they are at less than 5 hours apart
 public struct GroupedNotification: Identifiable, Hashable {
     public var id: String? { notifications.first?.id }
     public var notifications: [Notification]

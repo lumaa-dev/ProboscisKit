@@ -144,7 +144,8 @@ public actor Compressor {
 
 #if canImport(AppKit)
 extension NSImage {
-    func jpegData(compressionQuality: CGFloat) -> Data? {
+    /// This is the ``NSImage`` equivalent of `UIImage.jpegData()`
+    internal func jpegData(compressionQuality: CGFloat) -> Data? {
         guard let tiffRepresentation = self.tiffRepresentation else {
             return nil
         }

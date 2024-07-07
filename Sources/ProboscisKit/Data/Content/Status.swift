@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// A Mastodon status
 public final class Status: AnyStatus, Codable, Identifiable, Equatable, Hashable {
     public static func == (lhs: Status, rhs: Status) -> Bool {
         lhs.id == rhs.id
@@ -71,7 +72,7 @@ public final class Status: AnyStatus, Codable, Identifiable, Equatable, Hashable
     
     public static func placeholder(forSettings: Bool = false, language: String? = nil) -> Status {
         .init(id: UUID().uuidString,
-              content: .init(stringValue: "Have you ever tried [#Threaded](#)?",
+              content: .init(stringValue: "Have you ever tried [#Threaded](https://apps.lumaa.fr/app/threaded)?",
                              parseMarkdown: forSettings),
               
               account: .placeholder(),
@@ -105,6 +106,7 @@ public final class Status: AnyStatus, Codable, Identifiable, Equatable, Hashable
         [.placeholder(), .placeholder(), .placeholder(), .placeholder(), .placeholder()]
     }
     
+    /// Returns a ``Status`` if the current ``Status`` is a reblog
     public var reblogAsAsStatus: Status? {
         if let reblog {
             return .init(id: reblog.id,
@@ -139,6 +141,7 @@ public final class Status: AnyStatus, Codable, Identifiable, Equatable, Hashable
     }
 }
 
+/// A reblog status
 public final class ReblogStatus: AnyStatus, Codable, Identifiable, Equatable, Hashable {
     public static func == (lhs: ReblogStatus, rhs: ReblogStatus) -> Bool {
         lhs.id == rhs.id
@@ -240,10 +243,14 @@ public protocol AnyStatus {
     var language: String? { get }
 }
 
+/// A status' replies
 public struct StatusContext: Decodable {
+    /// The previous replies
     public let ancestors: [Status]
+    /// The next replies
     public let descendants: [Status]
     
+    /// No replies
     public static func empty() -> StatusContext {
         .init(ancestors: [], descendants: [])
     }
@@ -251,11 +258,18 @@ public struct StatusContext: Decodable {
 
 extension StatusContext: Sendable {}
 
+/// A Mastodon status attachment
 public struct MediaAttachment: Codable, Identifiable, Hashable, Equatable {
+    /// The size of the image
     public struct MetaContainer: Codable, Equatable {
         public struct Meta: Codable, Equatable {
             public let width: Int?
             public let height: Int?
+            
+            public var size: CGSize? {
+                guard let w = self.width, let h = self.height else { return nil }
+                return .init(width: w, height: h)
+            }
         }
         
         public let original: Meta?
@@ -275,6 +289,7 @@ public struct MediaAttachment: Codable, Identifiable, Hashable, Equatable {
         SupportedType(rawValue: type)
     }
     
+    /// The localized string for the current ``supportedType-swift.property``
     public var localizedTypeDescription: String? {
         if let supportedType {
             switch supportedType {
@@ -320,6 +335,7 @@ public struct Mention: Codable, Equatable, Hashable {
 
 extension Mention: Sendable {}
 
+/// A URL preview
 public struct Card: Codable, Identifiable, Equatable, Hashable {
     public var id: String {
         url
@@ -334,6 +350,7 @@ public struct Card: Codable, Identifiable, Equatable, Hashable {
 
 extension Card: Sendable {}
 
+/// A Mastodon client data
 public struct Application: Codable, Identifiable, Hashable, Equatable, Sendable {
     public var id: String {
         name
@@ -378,6 +395,7 @@ extension Filter: Sendable {}
 extension Filter.Action: Sendable {}
 extension Filter.Context: Sendable {}
 
+/// A Mastodon status' poll
 public struct Poll: Codable, Equatable, Hashable {
     public static func == (lhs: Poll, rhs: Poll) -> Bool {
         lhs.id == rhs.id
@@ -407,8 +425,7 @@ public struct Poll: Codable, Equatable, Hashable {
     public let ownVotes: [Int]?
     public let options: [Option]
     
-    // the votersCount can be null according to the docs when multiple is false.
-    // Didn't find that to be true, but we make sure
+    /// The votersCount can be null according to the docs when multiple is false.
     public var safeVotersCount: Int {
         votersCount ?? votesCount
     }

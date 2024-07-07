@@ -5,7 +5,7 @@ import SwiftUI
 import SwiftData
 
 /// A content filter designed for posts and its author
-protocol PostFilter {
+public protocol PostFilter {
     var type: ContentFilter.FilterContentType { get }
     var categoryName: String { get }
     var content: [String] { get set }
@@ -16,7 +16,7 @@ protocol PostFilter {
     func filter(_ post: Status, type: ContentFilter.FilterType, manualEdit: @escaping (String) -> Void) -> Bool
 }
 
-extension PostFilter {
+public extension PostFilter {
     func willFilter(_ content: String) -> Bool {
         return self.content.contains(where: { $0 == content.lowercased() })
     }
@@ -60,32 +60,34 @@ extension PostFilter {
     }
 }
 
-class ContentFilter {
+/// NOTE: The Content Filter is currently unstable
+public class ContentFilter {
     static let defaultFilter: ContentFilter.WordFilter = .init(categoryName: "Default", words: [])
     
-    class WordFilter: PostFilter {
-        let type: ContentFilter.FilterContentType = .words
-        let categoryName: String
-        var content: [String]
-        var post: Status?
+    /// A Content Filter that filters words
+    public class WordFilter: PostFilter {
+        public let type: ContentFilter.FilterContentType = .words
+        public let categoryName: String
+        public var content: [String]
+        public var post: Status?
         
-        init(categoryName: String, words: [String]) {
+        public init(categoryName: String, words: [String]) {
             self.categoryName = categoryName
             let rearranged: [String] = words.compactMap({ $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }).uniqued()
             self.content = rearranged
         }
         
-        init(model: ModelFilter) {
+        public init(model: ModelFilter) {
             self.categoryName = model.name
             self.content = model.sensitive
         }
         
-        func setContent(_ content: [String]) {
+        public func setContent(_ content: [String]) {
             let rearranged: [String] = content.compactMap({ $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }).uniqued()
             self.content = rearranged
         }
         
-        func filter(_ post: Status, type: ContentFilter.FilterType = .remove) -> Bool {
+        public func filter(_ post: Status, type: ContentFilter.FilterType = .remove) -> Bool {
             self.setPost(post)
             if type == .censor {
                 let sensitives: [String] = self.willFilter(post.content)
@@ -101,7 +103,7 @@ class ContentFilter {
             }
         }
         
-        func filter(_ post: Status, type: ContentFilter.FilterType = .remove, manualEdit: @escaping (String) -> Void = {_ in}) -> Bool {
+        public func filter(_ post: Status, type: ContentFilter.FilterType = .remove, manualEdit: @escaping (String) -> Void = {_ in}) -> Bool {
             self.setPost(post)
             if type == .censor {
                 let sensitives: [String] = self.willFilter(post.content)
@@ -123,34 +125,35 @@ class ContentFilter {
         }
     }
     
-    class URLFilter: PostFilter {
-        var type: ContentFilter.FilterContentType = .url
-        let categoryName: String
-        var content: [String]
-        var post: Status?
+    /// A filter that filters URLs
+    public class URLFilter: PostFilter {
+        public var type: ContentFilter.FilterContentType = .url
+        public let categoryName: String
+        public var content: [String]
+        public var post: Status?
         
-        init(categoryName: String, urls: [URL]) {
+        public init(categoryName: String, urls: [URL]) {
             self.categoryName = categoryName
             let rearranged: [String] = urls.compactMap({ $0.host() ?? "https://example.com" }).uniqued()
             self.content = rearranged
         }
         
-        init(model: ModelFilter) {
+        public init(model: ModelFilter) {
             self.categoryName = model.name
             self.content = model.sensitive
         }
         
-        func setContent(_ content: [String]) {
+        public func setContent(_ content: [String]) {
             let rearranged: [String] = content.compactMap({ $0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }).uniqued()
             self.content = rearranged
         }
         
-        func setContent(_ content: [URL]) {
+        public func setContent(_ content: [URL]) {
             let rearranged: [String] = content.compactMap({ $0.host() ?? "example.com" }).uniqued()
             self.content = rearranged
         }
         
-        func filter(_ post: Status, type: ContentFilter.FilterType = .remove) -> Bool {
+        public func filter(_ post: Status, type: ContentFilter.FilterType = .remove) -> Bool {
             self.setPost(post)
             if type == .censor {
                 let sensitives: [String] = self.willFilter(post.content)
@@ -166,7 +169,7 @@ class ContentFilter {
             }
         }
         
-        func filter(_ post: Status, type: ContentFilter.FilterType = .remove, manualEdit: @escaping (String) -> Void = {_ in}) -> Bool {
+        public func filter(_ post: Status, type: ContentFilter.FilterType = .remove, manualEdit: @escaping (String) -> Void = {_ in}) -> Bool {
             self.setPost(post)
             if type == .censor {
                 let sensitives: [String] = self.willFilter(post.content)
@@ -188,16 +191,19 @@ class ContentFilter {
         }
     }
     
-    enum FilterContentType: String, Codable {
+    /// All the available types of Content Filters
+    public enum FilterContentType: String, Codable {
         case words = "words"
         case url = "url"
     }
     
-    enum FilterType: String, CaseIterable {
+    /// All the available ways to filter
+    public enum FilterType: String, CaseIterable {
         case censor
         case remove
         
-        var localized: String {
+        /// A localized string for this type
+        public var localized: String {
             switch self {
                 case .censor:
                     String(localized: "status.content-filter.censor")
@@ -206,8 +212,9 @@ class ContentFilter {
             }
         }
         
+        /// A view for this type, using ``localized``
         @ViewBuilder
-        var label: some View {
+        public var label: some View {
             switch self {
                 case .censor:
                     Label(self.localized, systemImage: "asterisk")
@@ -218,8 +225,9 @@ class ContentFilter {
     }
 }
 
+/// A class to save any ``PostFilter``
 @Model
-class ModelFilter {
+public class ModelFilter {
     let name: String
     let sensitive: [String]
     let type: ContentFilter.FilterContentType
@@ -238,7 +246,7 @@ class ModelFilter {
 }
 
 extension NSAttributedString {
-    func replacing(_ placeholder: String, with valueString: String) -> NSAttributedString {
+    internal func replacing(_ placeholder: String, with valueString: String) -> NSAttributedString {
         if let range = self.string.range(of: placeholder) {
             let nsRange = NSRange(range, in: self.string) // Corrected to use self.string
             let mutableText = NSMutableAttributedString(attributedString: self)
@@ -250,7 +258,7 @@ extension NSAttributedString {
 }
 
 extension AttributedString {
-    func replacing(_ placeholder: String, with valueString: String) -> AttributedString {
+    internal func replacing(_ placeholder: String, with valueString: String) -> AttributedString {
         let ns = NSAttributedString(self)
         let replaced = ns.replacing(placeholder, with: valueString)
         return AttributedString(replaced)

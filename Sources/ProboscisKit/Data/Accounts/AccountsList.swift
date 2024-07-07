@@ -2,6 +2,7 @@
 
 import Foundation
 
+/// An Mastodon account list
 public struct AccountsList: Codable, Identifiable, Equatable, Hashable {
     public let id: String
     public let title: String
