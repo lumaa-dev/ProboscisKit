@@ -4,6 +4,8 @@ ProboscisKit is a lightweight Mastodon swift package.
 
 A derivative is used in [Threaded](https://apps.lumaa.fr/app/threaded)
 
+ProboscisKit is fully working, the only missing part is the documentation.
+
 ---
 
 # How to start
