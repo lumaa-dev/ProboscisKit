@@ -22,7 +22,7 @@ To know if a certain URL is a real Mastodon instance or not, you will need to do
 
 ```swift
 func isInstance(_ url: URL) async -> Bool {
-    let client: Client = .init(server: instanceUrl)
+    let client: Client = .init(server: url)
             
     do {
         let instance: Instance = try await client.get(endpoint: Instances.instance)
