@@ -1,5 +1,5 @@
 {
-  "originHash" : "560c83befe7dea945007f027d126f7c531c8234789f0f428d4afb1b5fa057f89",
+  "originHash" : "32796c3022d35e3be339602ebbcc3fad42200744b7dd23ad1f6b43fa53131a3c",
   "pins" : [
     {
       "identity" : "keychain-swift",
@@ -13,10 +13,10 @@
     {
       "identity" : "swiftsoup",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/scinfu/SwiftSoup",
+      "location" : "https://github.com/scinfu/SwiftSoup.git",
       "state" : {
-        "revision" : "028487d4a8a291b2fe1b4392b5425b6172056148",
-        "version" : "2.7.2"
+        "revision" : "32f5aea5af25d4229f3b1a72d6ed0edb3a12a03b",
+        "version" : "2.7.4"
       }
     }
   ],
